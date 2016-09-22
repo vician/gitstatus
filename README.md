@@ -18,3 +18,4 @@
 ## TODO
 
 - Argument parser
+- Parse `git status -sb`

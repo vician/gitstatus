@@ -56,6 +56,10 @@ for git_repo in $(find $git_root -name .git -type d); do
 				changes[$index]=$((${changes[$index]} + 1))
 			fi
 		done
+		origin=$(git status -sb)
+		origin_direction=$(git status -sb | head -n 1 | awk '{print $3}')
+		origin_count=$(git status -sb | head -n 1 | awk '{print $4}')
+		# TODO
 	fi
 done
 
