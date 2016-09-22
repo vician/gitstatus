@@ -1,7 +1,7 @@
 #!/bin/bash
 
 verbosity=2
-git_fetch=true
+git_fetch=false
 
 if [ $# -eq 0 ]; then
 	cd $(dirname $0)
@@ -16,6 +16,10 @@ if [ $# -ge 2 ]; then
 	verbosity=$2
 fi
 
+if [ $# -ge 3 ]; then
+	git_fetch=true
+fi
+
 declare -A changes
 
 sum_actions=0
@@ -24,13 +28,21 @@ IFS_BACKUP="$IFS"
 for git_repo in $(find $git_root -name .git -type d); do
 	IFS="$IFS_BACKUP"
 	cd $git_repo/..
+	if [ $git_fetch = true ]; then
+		git fetch
+	fi
 	sum_repo_actions=$(git status -s | wc -l)
 	sum_actions=$(expr $sum_actions + $sum_repo_actions)
-	if [ $verbosity -ge 4 ] || { [ $verbosity -eq 3 ] && [ $sum_repo_actions -ne 0 ]; }; then
+	if [ $verbosity -eq 3 ] && [ $sum_repo_actions -ne 0 ]; then
 		echo "$git_repo"
 	fi
-	if [ $verbosity -ge 3 ]; then
+	if [ $verbosity -eq 3 ]; then
 		git status -s
+	fi
+	if [ $verbosity -eq 4 ]; then
+		echo "---"
+		echo "$git_repo"
+		git status
 	fi
 	if [ $verbosity -eq 2 ] || [ $verbosity -eq 5 ]; then
 		IFS=$'\n'
